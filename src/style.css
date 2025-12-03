@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+body {
+  @apply bg-sky-50 text-slate-800 font-sans antialiased overflow-hidden;
+}
+
+#app {
+  @apply w-full h-screen flex flex-col;
+}
+
+.btn-primary {
+  @apply bg-sky-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg hover:bg-sky-400 hover:scale-105 active:scale-95 transition-all duration-200;
+}
+
+.btn-secondary {
+  @apply bg-white text-sky-600 font-bold py-3 px-6 rounded-2xl shadow-md border-2 border-sky-100 hover:bg-sky-50 hover:scale-105 active:scale-95 transition-all duration-200;
+}
+
+.card {
+  @apply bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50;
+}
