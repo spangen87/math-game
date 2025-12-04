@@ -213,16 +213,19 @@ export default {
       </div>
     </div>
 
-    <!-- Problem Display -->
-    <div class="flex-1 flex flex-col items-center justify-center mb-4 md:mb-8 min-h-0">
+    <!-- Main Game Area -->
+    <div class="flex-1 flex flex-col w-full min-h-0 justify-center gap-2 md:gap-4 pb-4 md:pb-0">
       
-      <!-- Pandis Character -->
-      <div class="z-10 -mb-8 md:-mb-8 relative scale-[0.65] md:scale-100 origin-bottom transition-transform">
-        <Pandis :state="pandisState" />
+      <!-- Panda Area -->
+      <div class="flex items-center justify-center py-2 md:py-4">
+        <div class="relative scale-110 md:scale-100 transition-transform">
+          <Pandis :state="pandisState" />
+        </div>
       </div>
 
+      <!-- Problem Box -->
       <div 
-        class="text-3xl md:text-7xl font-bold text-slate-800 flex items-center gap-2 md:gap-4 p-3 md:p-8 bg-white rounded-3xl shadow-xl w-full justify-center transition-transform"
+        class="shrink-0 text-3xl md:text-7xl font-bold text-slate-800 flex items-center gap-2 md:gap-4 p-4 md:p-8 bg-white rounded-3xl shadow-xl w-full justify-center transition-transform"
         :class="{ 'animate-shake border-4 border-berry-400': isShaking }"
       >
         <span class="text-sky-500">{{ state.currentProblem?.num1 }}</span>
@@ -233,15 +236,15 @@ export default {
           {{ currentInput || '?' }}
         </span>
       </div>
-    </div>
 
-    <!-- Numpad -->
-    <div class="mt-auto">
-      <Numpad 
-        @input="handleInput"
-        @delete="handleDelete"
-        @submit="handleSubmit"
-      />
+      <!-- Numpad -->
+      <div class="shrink-0 w-full">
+        <Numpad 
+          @input="handleInput"
+          @delete="handleDelete"
+          @submit="handleSubmit"
+        />
+      </div>
     </div>
   </div>
 </template>
