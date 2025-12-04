@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import confetti from 'canvas-confetti';
+import SplashScreen from './components/SplashScreen.vue';
 import SetupView from './views/SetupView.vue';
 import GameView from './views/GameView.vue';
 import LeaderboardView from './views/LeaderboardView.vue';
@@ -16,6 +17,11 @@ const feedbackType = ref<'correct' | 'wrong'>('correct');
 const lastScoreDelta = ref(10);
 const shakeTrigger = ref(0);
 const viewingLeaderboard = ref(false);
+const showSplash = ref(true);
+
+const handleSplashFinish = () => {
+  showSplash.value = false;
+};
 
 const handleStart = () => {
   startGame();
@@ -127,8 +133,13 @@ watch(() => state.value.status, async (newStatus) => {
     <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-sun-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
 
     <Transition name="fade" mode="out-in">
+      <SplashScreen 
+        v-if="showSplash" 
+        @finish="handleSplashFinish" 
+      />
+
       <SetupView 
-        v-if="state.status === 'idle' && !viewingLeaderboard" 
+        v-else-if="state.status === 'idle' && !viewingLeaderboard" 
         :config="config" 
         @start="handleStart"
         @view-leaderboard="handleViewLeaderboard" 

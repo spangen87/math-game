@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
   state: 'idle' | 'happy' | 'wrong';
+  waving?: boolean;
 }>();
 
 const isHappy = computed(() => props.state === 'happy');
@@ -31,7 +32,7 @@ watch(() => props.state, (newState) => {
       <ellipse cx="100" cy="185" rx="60" ry="10" fill="#000" opacity="0.1" class="shadow-anim" />
 
       <!-- Main Group -->
-      <g class="panda-body" :class="[state, `${state}-${variant}`]">
+      <g class="panda-body" :class="[state, `${state}-${variant}`, { 'waving': waving }]">
         <!-- Body -->
         <ellipse cx="100" cy="140" rx="65" ry="55" fill="white" />
 
@@ -96,7 +97,7 @@ watch(() => props.state, (newState) => {
           <path d="M 90 115 Q 100 125 110 115" stroke="#333" stroke-width="3" fill="none" stroke-linecap="round" />
           
           <!-- Cheeks (Happy) -->
-          <g class="cheeks transition-opacity duration-300" :class="isHappy ? 'opacity-100' : 'opacity-0'">
+          <g class="cheeks transition-opacity duration-300" :class="isHappy || waving ? 'opacity-100' : 'opacity-0'">
             <circle cx="55" cy="105" r="12" fill="#ffb7b2" opacity="0.6" />
             <circle cx="145" cy="105" r="12" fill="#ffb7b2" opacity="0.6" />
           </g>
@@ -135,6 +136,11 @@ watch(() => props.state, (newState) => {
   25% { transform: rotate(2deg); }
   75% { transform: rotate(-2deg); }
 }
+
+/* Waving Animation */
+.waving .arm-left { animation: waveLeft 0.6s ease-in-out infinite; }
+.waving .arm-right { animation: waveRight 0.6s ease-in-out infinite; }
+.waving .head { animation: headBobFast 0.4s ease-in-out infinite; }
 
 /* Happy Animations */
 /* Variant 1: Jump */
