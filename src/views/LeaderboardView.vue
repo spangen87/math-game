@@ -23,7 +23,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="card w-full max-w-md p-8 flex flex-col gap-6 animate-fade-in h-[80vh]">
+  <div class="card w-full max-w-md p-4 md:p-8 flex flex-col gap-6 animate-fade-in h-[80dvh]">
     <div v-if="score !== null && score !== undefined" class="text-center">
       <Trophy class="w-16 h-16 text-sun-500 mx-auto mb-4 animate-bounce-short" />
       <h2 class="text-3xl font-bold text-sky-600 mb-2">Spelet är slut!</h2>

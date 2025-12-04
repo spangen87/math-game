@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 body {
-  @apply bg-sky-50 text-slate-800 font-sans antialiased overflow-hidden;
+  @apply bg-sky-50 text-slate-800 font-sans antialiased;
   touch-action: manipulation;
 }
 
 #app {
-  @apply w-full h-screen flex flex-col;
+  @apply w-full h-[100dvh] flex flex-col;
 }
 
 .btn-primary {

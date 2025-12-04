@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Main Group -->
+  <g>
+    <!-- Body -->
+    <ellipse cx="100" cy="140" rx="65" ry="55" fill="white" />
+
+    <!-- Legs (Sitting in front) -->
+    <g>
+      <!-- Left Leg -->
+      <g transform="translate(65, 175)">
+        <ellipse cx="0" cy="0" rx="22" ry="18" fill="#333" />
+        <!-- Paw Pads -->
+        <ellipse cx="0" cy="4" rx="10" ry="8" fill="#555" />
+        <circle cx="-12" cy="-8" r="4" fill="#555" />
+        <circle cx="0" cy="-12" r="4" fill="#555" />
+        <circle cx="12" cy="-8" r="4" fill="#555" />
+      </g>
+      <!-- Right Leg -->
+      <g transform="translate(135, 175)">
+        <ellipse cx="0" cy="0" rx="22" ry="18" fill="#333" />
+        <!-- Paw Pads -->
+        <ellipse cx="0" cy="4" rx="10" ry="8" fill="#555" />
+        <circle cx="-12" cy="-8" r="4" fill="#555" />
+        <circle cx="0" cy="-12" r="4" fill="#555" />
+        <circle cx="12" cy="-8" r="4" fill="#555" />
+      </g>
+    </g>
+    
+    <!-- Arms -->
+    <g>
+      <path d="M 35 130 Q 20 150 45 160" stroke="#333" stroke-width="25" stroke-linecap="round" fill="none" />
+      <path d="M 165 130 Q 180 150 155 160" stroke="#333" stroke-width="25" stroke-linecap="round" fill="none" />
+    </g>
+
+    <!-- Head Group -->
+    <g>
+      <!-- Ears -->
+      <circle cx="45" cy="55" r="22" fill="#333" />
+      <circle cx="155" cy="55" r="22" fill="#333" />
+      
+      <!-- Face Shape -->
+      <circle cx="100" cy="85" r="60" fill="white" />
+      
+      <!-- Eye Patches -->
+      <ellipse cx="70" cy="80" rx="18" ry="24" fill="#333" transform="rotate(-15 70 80)" />
+      <ellipse cx="130" cy="80" rx="18" ry="24" fill="#333" transform="rotate(15 130 80)" />
+      
+      <!-- Eyes -->
+      <g>
+        <circle cx="74" cy="76" r="6" fill="white" />
+        <circle cx="126" cy="76" r="6" fill="white" />
+        <!-- Pupils -->
+        <circle cx="74" cy="76" r="3" fill="#333" />
+        <circle cx="126" cy="76" r="3" fill="#333" />
+      </g>
+      
+      <!-- Nose -->
+      <ellipse cx="100" cy="100" rx="12" ry="8" fill="#333" />
+      
+      <!-- Mouth -->
+      <path d="M 90 115 Q 100 125 110 115" stroke="#333" stroke-width="3" fill="none" stroke-linecap="round" />
+      
+      <!-- Cheeks (Happy) -->
+      <g opacity="0.6">
+        <circle cx="55" cy="105" r="12" fill="#ffb7b2" />
+        <circle cx="145" cy="105" r="12" fill="#ffb7b2" />
+      </g>
+    </g>
+  </g>
+</svg>

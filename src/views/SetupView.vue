@@ -53,7 +53,7 @@ const startGame = () => {
 </script>
 
 <template>
-  <div class="card w-full max-w-md p-4 md:p-8 flex flex-col gap-3 md:gap-4 animate-fade-in overflow-y-auto max-h-[90vh]">
+  <div class="card w-full max-w-md p-4 md:p-8 flex flex-col gap-3 md:gap-4 animate-fade-in overflow-y-auto max-h-[90dvh]">
     <div class="text-center">
       <h2 class="text-2xl md:text-3xl font-bold text-sky-600 mb-1 md:mb-2">Biancas Mattespel</h2>
       <p class="text-sm md:text-base text-slate-500">Välj dina inställningar!</p>

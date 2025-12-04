@@ -126,7 +126,7 @@ watch(() => state.value.status, async (newStatus) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-purple-50 font-sans text-slate-800 flex items-center justify-center p-4 relative overflow-hidden">
+  <div class="min-h-screen bg-purple-50 font-sans text-slate-800 flex items-center justify-center p-4 relative">
     <!-- Background decorations -->
     <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-sky-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
     <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-grass-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
