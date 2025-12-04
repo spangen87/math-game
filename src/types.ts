@@ -1,10 +1,12 @@
-export type Operator = '+' | '-' | '×';
+export type Operator = '+' | '-' | '×' | '÷';
 export type Difficulty = 'Easy' | 'Medium' | 'Hard';
+export type GameMode = 'ranked' | 'practice';
 
 export interface GameConfig {
-    operator: Operator;
+    operators: Operator[];
     difficulty: Difficulty;
     playerName: string;
+    mode: GameMode;
 }
 
 export interface MathProblem {

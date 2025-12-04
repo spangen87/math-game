@@ -14,6 +14,7 @@ const { config, state, startGame, endGame, checkAnswer, resetGame } = useGameEng
 const feedbackTrigger = ref(0);
 const feedbackType = ref<'correct' | 'wrong'>('correct');
 const lastScoreDelta = ref(10);
+const shakeTrigger = ref(0);
 
 const handleStart = () => {
   startGame();
@@ -30,6 +31,8 @@ const handleInput = (val: number) => {
       origin: { y: 0.7 },
       colors: ['#0EA5E9', '#22C55E', '#EAB308', '#EF4444']
     });
+  } else {
+    shakeTrigger.value++;
   }
   feedbackTrigger.value++;
 };
@@ -52,18 +55,20 @@ watch(() => state.value.status, async (newStatus) => {
       origin: { y: 0.6 }
     });
     
-    await submitScore({
-      player_name: config.value.playerName,
-      score: state.value.score,
-      difficulty: config.value.difficulty,
-      operation: config.value.operator,
-    });
+    if (config.value.mode === 'ranked') {
+      await submitScore({
+        player_name: config.value.playerName,
+        score: state.value.score,
+        difficulty: config.value.difficulty,
+        operation: config.value.operators[0] || '+',
+      });
+    }
   }
 });
 </script>
 
 <template>
-  <div class="min-h-screen bg-sky-50 font-sans text-slate-800 flex items-center justify-center p-4 relative overflow-hidden">
+  <div class="min-h-screen bg-purple-50 font-sans text-slate-800 flex items-center justify-center p-4 relative overflow-hidden">
     <!-- Background decorations -->
     <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-sky-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
     <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-grass-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
@@ -79,6 +84,8 @@ watch(() => state.value.status, async (newStatus) => {
       <div v-else-if="state.status === 'playing'" class="w-full h-full flex items-center justify-center relative">
         <GameView 
           :state="state"
+          :config="config"
+          :shake-trigger="shakeTrigger"
           @input="handleInput"
           @back="endGame"
         />

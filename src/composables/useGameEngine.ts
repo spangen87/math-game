@@ -6,9 +6,10 @@ export function useGameEngine() {
     const { playCorrect, playWrong, playGameOver } = useAudio();
 
     const config = ref<GameConfig>({
-        operator: '+',
+        operators: ['+'],
         difficulty: 'Easy',
         playerName: '',
+        mode: 'ranked',
     });
 
     const state = ref<GameState>({
@@ -22,6 +23,9 @@ export function useGameEngine() {
     let timerInterval: number | null = null;
 
     const generateProblem = (): MathProblem => {
+        const ops = config.value.operators.length > 0 ? config.value.operators : ['+'];
+        const currentOp = ops[Math.floor(Math.random() * ops.length)];
+
         let min = 1;
         let max = 10;
 
@@ -33,8 +37,8 @@ export function useGameEngine() {
             max = 50;
         }
 
-        // Adjust for multiplication to keep it reasonable
-        if (config.value.operator === '×') {
+        // Adjust for multiplication and division to keep it reasonable
+        if (currentOp === '×' || currentOp === '÷') {
             if (config.value.difficulty === 'Easy') max = 5;
             if (config.value.difficulty === 'Medium') max = 10;
             if (config.value.difficulty === 'Hard') max = 12;
@@ -43,19 +47,28 @@ export function useGameEngine() {
         let num1 = Math.floor(Math.random() * (max - min + 1)) + min;
         let num2 = Math.floor(Math.random() * (max - min + 1)) + min;
 
+        if (currentOp === '÷') {
+            // For division, ensure integer result by making num1 a multiple of num2
+            const divisor = num2;
+            const quotient = num1; // reuse generated number as quotient
+            num1 = divisor * quotient;
+            // num2 is the divisor
+        }
+
         // Ensure subtraction doesn't result in negative numbers
-        if (config.value.operator === '-' && num1 < num2) {
+        if (currentOp === '-' && num1 < num2) {
             [num1, num2] = [num2, num1];
         }
 
         let answer = 0;
-        switch (config.value.operator) {
+        switch (currentOp) {
             case '+': answer = num1 + num2; break;
             case '-': answer = num1 - num2; break;
             case '×': answer = num1 * num2; break;
+            case '÷': answer = num1 / num2; break;
         }
 
-        return { num1, num2, operator: config.value.operator, answer };
+        return { num1, num2, operator: currentOp, answer };
     };
 
     const startGame = () => {
@@ -65,13 +78,15 @@ export function useGameEngine() {
         state.value.streak = 0;
         state.value.currentProblem = generateProblem();
 
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = window.setInterval(() => {
-            state.value.timeLeft--;
-            if (state.value.timeLeft <= 0) {
-                endGame();
-            }
-        }, 1000);
+        if (config.value.mode === 'ranked') {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = window.setInterval(() => {
+                state.value.timeLeft--;
+                if (state.value.timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
     };
 
     const endGame = () => {
@@ -88,14 +103,18 @@ export function useGameEngine() {
 
         if (input === state.value.currentProblem.answer) {
             // Correct
-            state.value.score += 10 + Math.floor(state.value.streak / 3) * 5; // Bonus for streaks
-            state.value.streak++;
+            if (config.value.mode === 'ranked') {
+                state.value.score += 10 + Math.floor(state.value.streak / 3) * 5; // Bonus for streaks
+                state.value.streak++;
+            }
             playCorrect();
             state.value.currentProblem = generateProblem();
             return true;
         } else {
             // Wrong
-            state.value.streak = 0;
+            if (config.value.mode === 'ranked') {
+                state.value.streak = 0;
+            }
             playWrong();
             return false;
         }
