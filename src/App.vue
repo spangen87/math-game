@@ -15,6 +15,7 @@ const feedbackTrigger = ref(0);
 const feedbackType = ref<'correct' | 'wrong'>('correct');
 const lastScoreDelta = ref(10);
 const shakeTrigger = ref(0);
+const viewingLeaderboard = ref(false);
 
 const handleStart = () => {
   startGame();
@@ -85,7 +86,16 @@ const handleRestart = () => {
 
 const handleHome = () => {
   resetGame();
+  viewingLeaderboard.value = false;
   // Reset config if needed, or keep it
+};
+
+const handleViewLeaderboard = () => {
+  viewingLeaderboard.value = true;
+};
+
+const handleBackToSetup = () => {
+  viewingLeaderboard.value = false;
 };
 
 // Watch for game end
@@ -118,9 +128,16 @@ watch(() => state.value.status, async (newStatus) => {
 
     <Transition name="fade" mode="out-in">
       <SetupView 
-        v-if="state.status === 'idle'" 
+        v-if="state.status === 'idle' && !viewingLeaderboard" 
         :config="config" 
-        @start="handleStart" 
+        @start="handleStart"
+        @view-leaderboard="handleViewLeaderboard" 
+      />
+      
+      <LeaderboardView 
+        v-else-if="viewingLeaderboard"
+        :score="null"
+        @home="handleBackToSetup"
       />
       
       <div v-else-if="state.status === 'playing'" class="w-full h-full flex items-center justify-center relative">

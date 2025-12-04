@@ -5,7 +5,7 @@ import type { LeaderboardEntry } from '../types';
 import { fetchLeaderboard } from '../services/leaderboard';
 
 defineProps<{
-  score: number;
+  score?: number | null;
 }>();
 
 const emit = defineEmits<{
@@ -24,14 +24,20 @@ onMounted(async () => {
 
 <template>
   <div class="card w-full max-w-md p-8 flex flex-col gap-6 animate-fade-in h-[80vh]">
-    <div class="text-center">
+    <div v-if="score !== null && score !== undefined" class="text-center">
       <Trophy class="w-16 h-16 text-sun-500 mx-auto mb-4 animate-bounce-short" />
       <h2 class="text-3xl font-bold text-sky-600 mb-2">Spelet är slut!</h2>
       <p class="text-slate-500 text-xl">Din poäng: <span class="font-bold text-sky-600">{{ score }}</span></p>
     </div>
+    
+    <div v-else class="text-center">
+      <Trophy class="w-16 h-16 text-sun-500 mx-auto mb-4" />
+      <h2 class="text-3xl font-bold text-sky-600 mb-2">Topplista</h2>
+      <p class="text-slate-500">Se de bästa resultaten!</p>
+    </div>
 
     <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-      <h3 class="font-bold text-slate-700 mb-4 sticky top-0 bg-white/90 backdrop-blur-sm py-2">Topplista</h3>
+      <h3 class="font-bold text-slate-700 mb-4 sticky top-0 bg-white/90 backdrop-blur-sm py-2">Alla resultat</h3>
       
       <div v-if="loading" class="flex justify-center py-8">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
@@ -62,6 +68,7 @@ onMounted(async () => {
 
     <div class="flex flex-col gap-3 mt-auto">
       <button 
+        v-if="score !== null && score !== undefined"
         @click="emit('restart')"
         class="btn-primary w-full flex items-center justify-center gap-2 text-xl"
       >

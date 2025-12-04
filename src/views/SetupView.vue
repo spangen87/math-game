@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Play, Calculator, Zap, Brain, Divide, GraduationCap, Swords } from 'lucide-vue-next';
+import { Play, Calculator, Zap, Brain, Divide, GraduationCap, Swords, Trophy } from 'lucide-vue-next';
 import type { GameConfig, Operator, Difficulty, GameMode } from '../types';
 
 const props = defineProps<{
@@ -9,6 +9,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'start'): void;
+  (e: 'view-leaderboard'): void;
 }>();
 
 const operators: { value: Operator; label: string; icon: any }[] = [
@@ -52,9 +53,9 @@ const startGame = () => {
 </script>
 
 <template>
-  <div class="card w-full max-w-md p-4 md:p-8 flex flex-col gap-4 md:gap-6 animate-fade-in overflow-y-auto max-h-[90vh]">
+  <div class="card w-full max-w-md p-4 md:p-8 flex flex-col gap-3 md:gap-4 animate-fade-in overflow-y-auto max-h-[90vh]">
     <div class="text-center">
-      <h2 class="text-2xl md:text-3xl font-bold text-sky-600 mb-1 md:mb-2">Nytt Spel</h2>
+      <h2 class="text-2xl md:text-3xl font-bold text-sky-600 mb-1 md:mb-2">Biancas Mattespel</h2>
       <p class="text-sm md:text-base text-slate-500">Välj dina inställningar!</p>
     </div>
 
@@ -134,6 +135,14 @@ const startGame = () => {
     >
       <Play class="w-5 h-5 md:w-6 md:h-6 fill-current" />
       Starta Spelet
+    </button>
+    
+    <button 
+      @click="emit('view-leaderboard')"
+      class="btn-secondary w-full flex items-center justify-center gap-2 text-base md:text-lg py-2 md:py-3"
+    >
+      <Trophy class="w-5 h-5 md:w-6 md:h-6" />
+      Se Topplistan
     </button>
   </div>
 </template>
