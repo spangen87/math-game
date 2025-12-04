@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import type { GameConfig, GameState, MathProblem } from '../types';
+import type { GameConfig, GameState, MathProblem, Operator } from '../types';
 import { useAudio } from './useAudio';
 
 export function useGameEngine() {
@@ -23,8 +23,8 @@ export function useGameEngine() {
     let timerInterval: number | null = null;
 
     const generateProblem = (): MathProblem => {
-        const ops = config.value.operators.length > 0 ? config.value.operators : ['+'];
-        const currentOp = ops[Math.floor(Math.random() * ops.length)];
+        const ops: Operator[] = config.value.operators.length > 0 ? config.value.operators : ['+'];
+        const currentOp = ops[Math.floor(Math.random() * ops.length)] as Operator;
 
         let min = 1;
         let max = 10;
