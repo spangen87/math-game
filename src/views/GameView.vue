@@ -197,12 +197,20 @@ export default {
       </template>
     </div>
 
+    <!-- Desktop Hint Overlay Backdrop -->
+    <div v-if="showHint && config.mode === 'practice'" 
+         class="hidden md:block absolute inset-0 bg-white/60 z-10 rounded-3xl backdrop-blur-sm cursor-pointer"
+         @click="showHint = false">
+    </div>
+
     <!-- Hint Display -->
-    <div v-if="showHint && config.mode === 'practice'" class="mb-2 md:mb-4 w-full flex flex-col items-center gap-1.5 md:gap-2 animate-fade-in px-2 md:px-4">
-      <div class="inline-block bg-yellow-50 text-yellow-800 px-2.5 md:px-4 py-1 md:py-2 rounded-xl border border-yellow-200 font-medium text-[11px] md:text-sm">
+    <div v-if="showHint && config.mode === 'practice'" class="mb-2 md:mb-0 w-full flex flex-col items-center gap-1.5 md:gap-2 animate-fade-in px-2 md:px-4 md:absolute md:top-24 md:left-0 md:z-20 pointer-events-none">
+      <div class="pointer-events-auto inline-block bg-yellow-50 text-yellow-800 px-2.5 md:px-4 py-1 md:py-2 rounded-xl border border-yellow-200 font-medium text-[11px] md:text-sm shadow-sm">
         💡 {{ hintText }}
       </div>
-      <VisualHint v-if="state.currentProblem" :problem="state.currentProblem" />
+      <div class="pointer-events-auto w-full">
+        <VisualHint v-if="state.currentProblem" :problem="state.currentProblem" />
+      </div>
     </div>
 
     <!-- Problem Display -->

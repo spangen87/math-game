@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { Trophy, RotateCcw, Home } from 'lucide-vue-next';
 import type { LeaderboardEntry } from '../types';
-import { fetchLeaderboard } from '../services/supabase';
+import { fetchLeaderboard } from '../services/leaderboard';
 
 defineProps<{
   score: number;

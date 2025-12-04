@@ -6,7 +6,7 @@ import GameView from './views/GameView.vue';
 import LeaderboardView from './views/LeaderboardView.vue';
 import FeedbackOverlay from './components/FeedbackOverlay.vue';
 import { useGameEngine } from './composables/useGameEngine';
-import { submitScore } from './services/supabase';
+import { submitScore } from './services/leaderboard';
 
 const { config, state, startGame, endGame, checkAnswer, resetGame } = useGameEngine();
 
@@ -25,12 +25,54 @@ const handleInput = (val: number) => {
   feedbackType.value = correct ? 'correct' : 'wrong';
   if (correct) {
     lastScoreDelta.value = 10 + Math.floor(state.value.streak / 3) * 5;
-    confetti({
-      particleCount: 30,
-      spread: 50,
-      origin: { y: 0.7 },
-      colors: ['#0EA5E9', '#22C55E', '#EAB308', '#EF4444']
-    });
+    
+    // Random confetti effect
+    const effect = Math.floor(Math.random() * 4);
+    
+    if (effect === 0) {
+      // Classic
+      confetti({
+        particleCount: 30,
+        spread: 50,
+        origin: { y: 0.7 },
+        colors: ['#0EA5E9', '#22C55E', '#EAB308', '#EF4444']
+      });
+    } else if (effect === 1) {
+      // Stars
+      confetti({
+        shapes: ['star'],
+        colors: ['#FFE400', '#FFBD00', '#E89400', '#FFCA6C', '#FDFFB8'],
+        particleCount: 20,
+        spread: 70,
+        origin: { y: 0.7 }
+      });
+    } else if (effect === 2) {
+      // Side Cannons (School Pride style)
+      confetti({
+        particleCount: 15,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.8 },
+        colors: ['#0EA5E9', '#22C55E']
+      });
+      confetti({
+        particleCount: 15,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.8 },
+        colors: ['#EAB308', '#EF4444']
+      });
+    } else {
+      // Burst (Fireworks)
+      const randomX = Math.random() * 0.4 + 0.3; // 0.3 - 0.7
+      confetti({
+        particleCount: 40,
+        spread: 100,
+        origin: { x: randomX, y: 0.6 },
+        startVelocity: 30,
+        gravity: 0.8
+      });
+    }
   } else {
     shakeTrigger.value++;
   }
