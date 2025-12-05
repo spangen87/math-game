@@ -5,11 +5,12 @@ import SplashScreen from './components/SplashScreen.vue';
 import SetupView from './views/SetupView.vue';
 import GameView from './views/GameView.vue';
 import LeaderboardView from './views/LeaderboardView.vue';
+import RulesView from './views/RulesView.vue';
 import FeedbackOverlay from './components/FeedbackOverlay.vue';
 import { useGameEngine } from './composables/useGameEngine';
 import { submitScore } from './services/leaderboard';
 
-const { config, state, startGame, endGame, checkAnswer, resetGame } = useGameEngine();
+const { config, state, startGame, endGame, checkAnswer, resetGame, skipProblem } = useGameEngine();
 
 // Feedback state
 const feedbackTrigger = ref(0);
@@ -17,6 +18,7 @@ const feedbackType = ref<'correct' | 'wrong'>('correct');
 const lastScoreDelta = ref(10);
 const shakeTrigger = ref(0);
 const viewingLeaderboard = ref(false);
+const viewingRules = ref(false);
 const showSplash = ref(true);
 
 const handleSplashFinish = () => {
@@ -93,6 +95,7 @@ const handleRestart = () => {
 const handleHome = () => {
   resetGame();
   viewingLeaderboard.value = false;
+  viewingRules.value = false;
   // Reset config if needed, or keep it
 };
 
@@ -100,8 +103,17 @@ const handleViewLeaderboard = () => {
   viewingLeaderboard.value = true;
 };
 
+const handleViewRules = () => {
+  viewingRules.value = true;
+};
+
 const handleBackToSetup = () => {
   viewingLeaderboard.value = false;
+  viewingRules.value = false;
+};
+
+const handleSkip = () => {
+  skipProblem();
 };
 
 // Watch for game end
@@ -139,15 +151,21 @@ watch(() => state.value.status, async (newStatus) => {
       />
 
       <SetupView 
-        v-else-if="state.status === 'idle' && !viewingLeaderboard" 
+        v-else-if="state.status === 'idle' && !viewingLeaderboard && !viewingRules" 
         :config="config" 
         @start="handleStart"
         @view-leaderboard="handleViewLeaderboard" 
+        @view-rules="handleViewRules"
       />
       
       <LeaderboardView 
         v-else-if="viewingLeaderboard"
         :score="null"
+        @home="handleBackToSetup"
+      />
+
+      <RulesView 
+        v-else-if="viewingRules"
         @home="handleBackToSetup"
       />
       
@@ -158,6 +176,7 @@ watch(() => state.value.status, async (newStatus) => {
           :shake-trigger="shakeTrigger"
           @input="handleInput"
           @back="endGame"
+          @skip="handleSkip"
         />
         <FeedbackOverlay 
           :trigger="feedbackTrigger" 

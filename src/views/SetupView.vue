@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Play, Calculator, Zap, Brain, Divide, GraduationCap, Swords, Trophy } from 'lucide-vue-next';
+import { Play, Calculator, Zap, Brain, Divide, GraduationCap, Swords, Trophy, HelpCircle } from 'lucide-vue-next';
 import type { GameConfig, Operator, Difficulty, GameMode } from '../types';
 
 const props = defineProps<{
@@ -9,7 +9,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'start'): void;
+  (e: 'start'): void;
   (e: 'view-leaderboard'): void;
+  (e: 'view-rules'): void;
 }>();
 
 const operators: { value: Operator; label: string; icon: any }[] = [
@@ -55,8 +57,17 @@ const startGame = () => {
 <template>
   <div class="card w-full max-w-md p-4 md:p-8 flex flex-col gap-3 md:gap-4 animate-fade-in overflow-y-auto max-h-[90dvh]">
     <div class="text-center">
-      <h2 class="text-2xl md:text-3xl font-bold text-sky-600 mb-1 md:mb-2">Biancas Mattespel</h2>
-      <p class="text-sm md:text-base text-slate-500">Välj dina inställningar!</p>
+      <h2 class="text-3xl md:text-3xl font-black text-purple-400 mb-1 md:mb-2">Biancas Mattespel</h2>
+      <div class="flex items-center justify-center gap-2 mb-1 md:mb-2">
+        <p class="text-sm md:text-base text-slate-500">Välj dina inställningar!</p>
+        <button 
+          @click="emit('view-rules')"
+          class="p-1 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+          title="Hur spelar man?"
+        >
+          <HelpCircle class="w-4 h-4" />
+        </button>
+      </div>
     </div>
 
     <!-- Name Input -->

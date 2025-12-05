@@ -22,6 +22,7 @@ export interface GameState {
     timeLeft: number;
     currentProblem: MathProblem | null;
     streak: number;
+    skipsUsed: number;
 }
 
 export interface LeaderboardEntry {

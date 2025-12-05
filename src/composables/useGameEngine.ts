@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { GameConfig, GameState, MathProblem, Operator } from '../types';
 import { useAudio } from './useAudio';
 
@@ -8,8 +8,13 @@ export function useGameEngine() {
     const config = ref<GameConfig>({
         operators: ['+'],
         difficulty: 'Easy',
-        playerName: '',
+        playerName: localStorage.getItem('math-game-player-name') || '',
         mode: 'ranked',
+    });
+
+    // Persist player name
+    watch(() => config.value.playerName, (newName) => {
+        localStorage.setItem('math-game-player-name', newName);
     });
 
     const state = ref<GameState>({
@@ -18,6 +23,7 @@ export function useGameEngine() {
         timeLeft: 60,
         currentProblem: null,
         streak: 0,
+        skipsUsed: 0,
     });
 
     let timerInterval: number | null = null;
@@ -76,6 +82,7 @@ export function useGameEngine() {
         state.value.score = 0;
         state.value.timeLeft = 60;
         state.value.streak = 0;
+        state.value.skipsUsed = 0;
         state.value.currentProblem = generateProblem();
 
         if (config.value.mode === 'ranked') {
@@ -126,6 +133,16 @@ export function useGameEngine() {
         state.value.timeLeft = 60;
         state.value.streak = 0;
         state.value.currentProblem = null;
+        state.value.skipsUsed = 0;
+    };
+
+    const skipProblem = (): boolean => {
+        if (state.value.skipsUsed >= 2) return false;
+
+        state.value.skipsUsed++;
+        state.value.streak = 0; // Reset streak on skip
+        state.value.currentProblem = generateProblem();
+        return true;
     };
 
     return {
@@ -135,5 +152,6 @@ export function useGameEngine() {
         endGame,
         checkAnswer,
         resetGame,
+        skipProblem,
     };
 }

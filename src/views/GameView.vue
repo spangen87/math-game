@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { Clock, Trophy, ArrowLeft, Settings, X, Calculator, Zap, Brain, Divide, HelpCircle } from 'lucide-vue-next';
+import { Clock, Trophy, ArrowLeft, Settings, X, Calculator, Zap, Brain, Divide, SkipForward, Lightbulb, Eye } from 'lucide-vue-next';
 import Numpad from '../components/Numpad.vue';
 import VisualHint from '../components/VisualHint.vue';
 import Pandis from '../components/Pandis.vue';
@@ -15,6 +15,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'input', value: number): void;
   (e: 'back'): void;
+  (e: 'skip'): void;
 }>();
 
 const currentInput = ref<string>('');
@@ -156,43 +157,60 @@ export default {
     </div>
 
     <!-- Header -->
-    <div class="flex justify-between items-center mb-2 md:mb-6 bg-white/50 p-2 md:p-4 rounded-2xl backdrop-blur-sm">
-      <button @click="emit('back')" class="p-1.5 md:p-2 hover:bg-white/50 rounded-xl transition-colors">
-        <ArrowLeft class="w-5 h-5 md:w-6 md:h-6 text-slate-600" />
+    <div class="flex justify-between items-center mb-4 md:mb-8 bg-white/60 p-3 md:p-5 rounded-3xl backdrop-blur-md shadow-sm">
+      <button @click="emit('back')" class="p-2 md:p-3 hover:bg-white/50 rounded-2xl transition-colors">
+        <ArrowLeft class="w-6 h-6 md:w-7 md:h-7 text-slate-600" />
       </button>
       
       <template v-if="config.mode === 'ranked'">
-        <div class="flex items-center gap-1.5 md:gap-2 text-sky-600 font-bold text-base md:text-xl">
-          <Clock class="w-4 h-4 md:w-6 md:h-6" />
-          <span>{{ state.timeLeft }}s</span>
+        <div class="flex items-center gap-4 md:gap-8">
+          <div class="flex items-center gap-1.5 md:gap-2 text-sky-600 font-bold text-lg md:text-2xl">
+            <Clock class="w-5 h-5 md:w-7 md:h-7" />
+            <span>{{ state.timeLeft }}s</span>
+          </div>
+
+          <div class="flex items-center gap-1.5 md:gap-2 text-sun-600 font-bold text-lg md:text-2xl">
+            <Trophy class="w-5 h-5 md:w-7 md:h-7" />
+            <span>{{ state.score }}</span>
+          </div>
         </div>
 
-        <div class="flex items-center gap-1.5 md:gap-2 text-sun-600 font-bold text-base md:text-xl">
-          <Trophy class="w-4 h-4 md:w-6 md:h-6" />
-          <span>{{ state.score }}</span>
-        </div>
+        <button 
+          @click="emit('skip')" 
+          :disabled="state.skipsUsed >= 2"
+          class="flex items-center gap-1 md:gap-2 px-3 md:px-4 py-2 rounded-xl font-bold text-sm md:text-base transition-colors"
+          :class="state.skipsUsed >= 2 
+            ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+            : 'bg-rose-100 text-rose-700 hover:bg-rose-200'"
+        >
+          <SkipForward class="w-4 h-4 md:w-5 md:h-5" />
+          <span class="hidden sm:inline">Hoppa över</span>
+          <span class="bg-white/50 px-1.5 rounded-md text-xs">{{ 2 - state.skipsUsed }}</span>
+        </button>
       </template>
 
       <template v-else>
-        <div class="flex items-center gap-1 md:gap-2">
-          <div class="text-sky-600 font-bold text-sm md:text-xl">Övningsläge</div>
+        <div class="flex-1 flex items-center justify-center md:justify-end gap-2 md:gap-4 mx-2">
+          <div class="hidden md:block text-sky-600 font-bold text-xl">Övningsläge</div>
+          
           <button 
             @click="showHint = !showHint" 
-            class="flex items-center gap-0.5 md:gap-1 px-2 md:px-3 py-0.5 md:py-1 rounded-full bg-yellow-100 text-yellow-700 font-bold text-xs md:text-sm hover:bg-yellow-200 transition-colors"
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-yellow-100 text-yellow-700 font-bold text-sm md:text-base hover:bg-yellow-200 transition-colors shadow-sm"
           >
-            <HelpCircle class="w-3 h-3 md:w-4 md:h-4" />
-            <span class="hidden sm:inline">{{ showHint ? 'Dölj' : 'Ledtråd' }}</span>
+            <Lightbulb class="w-4 h-4 md:w-5 md:h-5" />
+            <span>{{ showHint ? 'Dölj' : 'Ledtråd' }}</span>
           </button>
+          
           <button 
             @click="showAnswer" 
-            class="flex items-center gap-0.5 md:gap-1 px-2 md:px-3 py-0.5 md:py-1 rounded-full bg-purple-100 text-purple-700 font-bold text-xs md:text-sm hover:bg-purple-200 transition-colors"
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-100 text-purple-700 font-bold text-sm md:text-base hover:bg-purple-200 transition-colors shadow-sm"
           >
-            <HelpCircle class="w-3 h-3 md:w-4 md:h-4" />
-            <span class="hidden sm:inline">Visa svar</span>
+            <Eye class="w-4 h-4 md:w-5 md:h-5" />
+            <span>Svar</span>
           </button>
         </div>
-        <button @click="showSettings = true" class="p-1.5 md:p-2 hover:bg-white/50 rounded-xl transition-colors">
-          <Settings class="w-5 h-5 md:w-6 md:h-6 text-slate-600" />
+        <button @click="showSettings = true" class="p-2 md:p-3 hover:bg-white/50 rounded-2xl transition-colors">
+          <Settings class="w-6 h-6 md:w-7 md:h-7 text-slate-600" />
         </button>
       </template>
     </div>
