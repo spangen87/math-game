@@ -1,51 +1,44 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
   trigger: number; // Increment to trigger animation
   type: 'correct' | 'wrong';
   scoreDelta?: number;
+  // Shown instead of +poäng, e.g. "Rätt!" in practice mode
+  message?: string;
 }>();
 
 const show = ref(false);
+let hideTimer: number | undefined;
 
 watch(() => props.trigger, () => {
-  show.value = true;
-  setTimeout(() => {
-    show.value = false;
-  }, 800);
+  show.value = false;
+  window.clearTimeout(hideTimer);
+  // Restart the pop on the next frame so quick answers animate too
+  requestAnimationFrame(() => {
+    show.value = true;
+    hideTimer = window.setTimeout(() => {
+      show.value = false;
+    }, 800);
+  });
+});
+
+const text = computed(() => {
+  if (props.type === 'wrong') return 'Försök igen!';
+  return props.message ?? `+${props.scoreDelta ?? 10}`;
 });
 </script>
 
 <template>
-  <Transition name="pop">
-    <div 
+  <div class="absolute inset-x-0 bottom-0 flex justify-center pointer-events-none z-30">
+    <div
       v-if="show"
-      class="absolute inset-0 flex items-center justify-center pointer-events-none z-50"
+      class="ms-feedback ms-feedback--pop"
+      :class="type === 'correct' ? 'ms-feedback--correct' : 'ms-feedback--wrong'"
+      role="status"
     >
-      <div 
-        class="text-6xl font-black drop-shadow-lg transform"
-        :class="type === 'correct' ? 'text-grass-500' : 'text-berry-500'"
-      >
-        {{ type === 'correct' ? `+${scoreDelta}` : 'Försök igen!' }}
-      </div>
+      {{ text }}
     </div>
-  </Transition>
+  </div>
 </template>
-
-<style scoped>
-.pop-enter-active,
-.pop-leave-active {
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.pop-enter-from {
-  opacity: 0;
-  transform: scale(0.5) translateY(20px);
-}
-
-.pop-leave-to {
-  opacity: 0;
-  transform: scale(1.5) translateY(-50px);
-}
-</style>

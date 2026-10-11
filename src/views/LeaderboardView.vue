@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { Trophy, RotateCcw, Home } from 'lucide-vue-next';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { Trophy, RotateCcw, House } from 'lucide-vue-next';
+import Pandis from '../components/Pandis.vue';
+import type { PandisMood } from '../components/Pandis.vue';
 import type { LeaderboardEntry } from '../types';
 import { fetchLeaderboard } from '../services/leaderboard';
+import { difficultyLabels, displayOperator } from '../labels';
 
-defineProps<{
+const props = defineProps<{
   score?: number | null;
 }>();
 
@@ -15,72 +18,78 @@ const emit = defineEmits<{
 
 const leaderboard = ref<LeaderboardEntry[]>([]);
 const loading = ref(true);
+const isResult = props.score !== null && props.score !== undefined;
+
+// Pandis cheers for the finished game, then settles down
+const pandisState = ref<PandisMood>(isResult ? 'cheer' : 'idle');
+let calmTimer: number | undefined;
 
 onMounted(async () => {
+  if (isResult) {
+    calmTimer = window.setTimeout(() => {
+      pandisState.value = 'idle';
+    }, 3000);
+  }
   leaderboard.value = await fetchLeaderboard();
   loading.value = false;
 });
+
+onUnmounted(() => window.clearTimeout(calmTimer));
+
+const rankClass = (index: number) => (index < 3 ? `ms-rank--${index + 1}` : '');
+const meta = (entry: LeaderboardEntry) =>
+  [difficultyLabels[entry.difficulty] ?? entry.difficulty, entry.operation && displayOperator(entry.operation)]
+    .filter(Boolean)
+    .join(' · ');
 </script>
 
 <template>
-  <div class="card w-full max-w-md p-4 md:p-8 flex flex-col gap-6 animate-fade-in h-[80dvh]">
-    <div v-if="score !== null && score !== undefined" class="text-center">
-      <Trophy class="w-16 h-16 text-sun-500 mx-auto mb-4 animate-bounce-short" />
-      <h2 class="text-3xl font-bold text-sky-600 mb-2">Spelet är slut!</h2>
-      <p class="text-slate-500 text-xl">Din poäng: <span class="font-bold text-sky-600">{{ score }}</span></p>
-    </div>
-    
-    <div v-else class="text-center">
-      <Trophy class="w-16 h-16 text-sun-500 mx-auto mb-4" />
-      <h2 class="text-3xl font-bold text-sky-600 mb-2">Topplista</h2>
-      <p class="text-slate-500">Se de bästa resultaten!</p>
+  <div class="ms-card w-full max-w-md h-full max-h-[760px] min-h-0">
+    <div v-if="isResult" class="flex flex-col items-center gap-2 text-center pt-8">
+      <Pandis :state="pandisState" :bubble="pandisState === 'cheer' ? 'Bra kämpat!' : null" :size="120" />
+      <h2 class="ms-card__title mt-2">Spelet är slut!</h2>
+      <p class="m-0 text-ink-muted text-lg">
+        Din poäng: <span class="font-display text-[28px] font-semibold text-brand tabular-nums align-[-2px]">{{ score }}</span>
+      </p>
     </div>
 
-    <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-      <h3 class="font-bold text-slate-700 mb-4 sticky top-0 bg-white/90 backdrop-blur-sm py-2">Alla resultat</h3>
-      
+    <div v-else class="flex items-center gap-3">
+      <span class="ms-stat ms-tone-sun p-0! w-12 h-12 justify-center shrink-0">
+        <Trophy class="ms-icon" />
+      </span>
+      <div>
+        <h2 class="ms-card__title">Topplista</h2>
+        <p class="m-0 text-ink-muted text-sm">De bästa resultaten hittills</p>
+      </div>
+    </div>
+
+    <div class="flex-1 min-h-0 overflow-y-auto -mx-1 px-1 custom-scrollbar">
+      <h3 class="ms-field__label sticky top-0 bg-surface py-2 m-0 z-10">Alla resultat</h3>
+
       <div v-if="loading" class="flex justify-center py-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
+        <div class="animate-spin rounded-full h-8 w-8 border-[3px] border-brand-soft border-t-brand" role="status" aria-label="Laddar"></div>
       </div>
 
-      <div v-else class="flex flex-col gap-3">
-        <div 
-          v-for="(entry, index) in leaderboard" 
-          :key="index"
-          class="flex items-center justify-between p-3 rounded-xl bg-sky-50 border border-sky-100"
-        >
-          <div class="flex items-center gap-3">
-            <span 
-              class="w-8 h-8 flex items-center justify-center rounded-full font-bold text-white"
-              :class="index === 0 ? 'bg-sun-500' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-sky-200 text-sky-700'"
-            >
-              {{ index + 1 }}
-            </span>
-            <div class="flex flex-col">
-              <span class="font-bold text-slate-700">{{ entry.player_name }}</span>
-              <span class="text-xs text-slate-400">{{ entry.difficulty }} • {{ entry.operation }}</span>
-            </div>
+      <div v-else class="ms-ranklist">
+        <div v-for="(entry, index) in leaderboard" :key="index" class="ms-rank-row">
+          <span class="ms-rank" :class="rankClass(index)">{{ index + 1 }}</span>
+          <div class="ms-rank-row__who">
+            <span class="ms-rank-row__name">{{ entry.player_name }}</span>
+            <span class="ms-rank-row__meta">{{ meta(entry) }}</span>
           </div>
-          <span class="font-bold text-sky-600">{{ entry.score }}</span>
+          <span class="ms-rank-row__score">{{ entry.score }}</span>
         </div>
       </div>
     </div>
 
-    <div class="flex flex-col gap-3 mt-auto">
-      <button 
-        v-if="score !== null && score !== undefined"
-        @click="emit('restart')"
-        class="btn-primary w-full flex items-center justify-center gap-2 text-xl"
-      >
-        <RotateCcw class="w-6 h-6" />
-        Spela Igen
+    <div class="flex flex-col gap-3">
+      <button v-if="isResult" type="button" class="ms-btn ms-btn--primary ms-btn--block" @click="emit('restart')">
+        <RotateCcw class="ms-icon" />
+        Spela igen
       </button>
-      
-      <button 
-        @click="emit('home')"
-        class="btn-secondary w-full flex items-center justify-center gap-2 text-xl"
-      >
-        <Home class="w-6 h-6" />
+
+      <button type="button" class="ms-btn ms-btn--secondary ms-btn--block" @click="emit('home')">
+        <House class="ms-icon" />
         Hem
       </button>
     </div>
@@ -95,7 +104,7 @@ onMounted(async () => {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: var(--line);
   border-radius: 20px;
 }
 </style>

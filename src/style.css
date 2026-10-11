@@ -1,22 +1,44 @@
 @import "tailwindcss";
+@import "./design/tokens.css";
+@import "./design/components.css" layer(components);
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-sky-soft: var(--sky-soft);
+  --color-sky-ink: var(--sky-ink);
+  --color-sun-soft: var(--sun-soft);
+  --color-sun-ink: var(--sun-ink);
+  --font-sans: var(--font-text);
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+html,
+body {
+  height: 100%;
+}
 
 body {
-  @apply bg-sky-50 text-slate-800 font-sans antialiased;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  -webkit-font-smoothing: antialiased;
   touch-action: manipulation;
 }
 
 #app {
-  @apply w-full h-[100dvh] flex flex-col;
-}
-
-.btn-primary {
-  @apply bg-sky-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg hover:bg-sky-400 hover:scale-105 active:scale-95 transition-all duration-200;
-}
-
-.btn-secondary {
-  @apply bg-white text-sky-600 font-bold py-3 px-6 rounded-2xl shadow-md border-2 border-sky-100 hover:bg-sky-50 hover:scale-105 active:scale-95 transition-all duration-200;
-}
-
-.card {
-  @apply bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50;
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }

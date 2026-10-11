@@ -6,7 +6,6 @@ import SetupView from './views/SetupView.vue';
 import GameView from './views/GameView.vue';
 import LeaderboardView from './views/LeaderboardView.vue';
 import RulesView from './views/RulesView.vue';
-import FeedbackOverlay from './components/FeedbackOverlay.vue';
 import { useGameEngine } from './composables/useGameEngine';
 import { submitScore } from './services/leaderboard';
 
@@ -16,7 +15,6 @@ const { config, state, startGame, endGame, checkAnswer, resetGame, skipProblem }
 const feedbackTrigger = ref(0);
 const feedbackType = ref<'correct' | 'wrong'>('correct');
 const lastScoreDelta = ref(10);
-const shakeTrigger = ref(0);
 const viewingLeaderboard = ref(false);
 const viewingRules = ref(false);
 const showSplash = ref(true);
@@ -29,26 +27,32 @@ const handleStart = () => {
   startGame();
 };
 
+// Confetti in the design system's brand, sky, grass and sun
+const CONFETTI = ['#7b3fe4', '#0a8fd1', '#22c55e', '#facc15'];
+const burst = (options: confetti.Options) => confetti({ disableForReducedMotion: true, ...options });
+
 const handleInput = (val: number) => {
+  // Same bonus as the engine: based on the streak before this answer
+  const delta = 10 + Math.floor(state.value.streak / 3) * 5;
   const correct = checkAnswer(val);
   feedbackType.value = correct ? 'correct' : 'wrong';
   if (correct) {
-    lastScoreDelta.value = 10 + Math.floor(state.value.streak / 3) * 5;
+    lastScoreDelta.value = delta;
     
     // Random confetti effect
     const effect = Math.floor(Math.random() * 4);
     
     if (effect === 0) {
       // Classic
-      confetti({
+      burst({
         particleCount: 30,
         spread: 50,
         origin: { y: 0.7 },
-        colors: ['#0EA5E9', '#22C55E', '#EAB308', '#EF4444']
+        colors: CONFETTI
       });
     } else if (effect === 1) {
       // Stars
-      confetti({
+      burst({
         shapes: ['star'],
         colors: ['#FFE400', '#FFBD00', '#E89400', '#FFCA6C', '#FDFFB8'],
         particleCount: 20,
@@ -57,33 +61,32 @@ const handleInput = (val: number) => {
       });
     } else if (effect === 2) {
       // Side Cannons (School Pride style)
-      confetti({
+      burst({
         particleCount: 15,
         angle: 60,
         spread: 55,
         origin: { x: 0, y: 0.8 },
-        colors: ['#0EA5E9', '#22C55E']
+        colors: ['#7b3fe4', '#0a8fd1']
       });
-      confetti({
+      burst({
         particleCount: 15,
         angle: 120,
         spread: 55,
         origin: { x: 1, y: 0.8 },
-        colors: ['#EAB308', '#EF4444']
+        colors: ['#22c55e', '#facc15']
       });
     } else {
       // Burst (Fireworks)
       const randomX = Math.random() * 0.4 + 0.3; // 0.3 - 0.7
-      confetti({
+      burst({
         particleCount: 40,
         spread: 100,
         origin: { x: randomX, y: 0.6 },
         startVelocity: 30,
-        gravity: 0.8
+        gravity: 0.8,
+        colors: CONFETTI
       });
     }
-  } else {
-    shakeTrigger.value++;
   }
   feedbackTrigger.value++;
 };
@@ -119,10 +122,11 @@ const handleSkip = () => {
 // Watch for game end
 watch(() => state.value.status, async (newStatus) => {
   if (newStatus === 'finished') {
-    confetti({
+    burst({
       particleCount: 150,
       spread: 100,
-      origin: { y: 0.6 }
+      origin: { y: 0.6 },
+      colors: CONFETTI
     });
     
     if (config.value.mode === 'ranked') {
@@ -138,11 +142,7 @@ watch(() => state.value.status, async (newStatus) => {
 </script>
 
 <template>
-  <div class="h-full w-full bg-purple-50 font-sans text-slate-800 flex items-center justify-center p-0 md:p-4 relative overflow-hidden">
-    <!-- Background decorations -->
-    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-sky-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-    <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-grass-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-    <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-sun-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+  <div class="h-full w-full bg-bg font-sans text-ink flex items-center justify-center px-4 py-3 md:py-6 relative overflow-hidden">
 
     <Transition name="fade" mode="out-in">
       <SplashScreen 
@@ -173,15 +173,12 @@ watch(() => state.value.status, async (newStatus) => {
         <GameView 
           :state="state"
           :config="config"
-          :shake-trigger="shakeTrigger"
+          :feedback-trigger="feedbackTrigger"
+          :feedback-type="feedbackType"
+          :score-delta="lastScoreDelta"
           @input="handleInput"
           @back="endGame"
           @skip="handleSkip"
-        />
-        <FeedbackOverlay 
-          :trigger="feedbackTrigger" 
-          :type="feedbackType" 
-          :score-delta="lastScoreDelta"
         />
       </div>
 
@@ -204,24 +201,5 @@ watch(() => state.value.status, async (newStatus) => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-@keyframes blob {
-  0% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(0px, 0px) scale(1); }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
 }
 </style>
