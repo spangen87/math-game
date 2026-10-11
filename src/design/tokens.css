@@ -1,0 +1,92 @@
+/* Biancas Mattespel — tokens från designsystemet (tokens.json). Ljust tema först, mörkt följer systemet. */
+:root {
+  color-scheme: light;
+  --bg: #f5f3fa;
+  --surface: #ffffff;
+  --surface-sunken: #eeebf6;
+  --line: #e2deee;
+  --line-strong: #8a84a3;
+  --ink: #1e1b2e;
+  --ink-muted: #5c5872;
+  --brand: #7b3fe4;
+  --brand-soft: #ede6fd;
+  --brand-press: #5a26bd;
+  --on-brand: #ffffff;
+  --on-color: #1e1b2e;
+  --sky: #0a8fd1;
+  --sky-soft: #e0f2fe;
+  --sky-ink: #03689c;
+  --grass: #22c55e;
+  --grass-soft: #dcfce7;
+  --grass-ink: #15803d;
+  --sun: #facc15;
+  --sun-soft: #fef6c7;
+  --sun-ink: #854d0e;
+  --berry: #dc2626;
+  --berry-soft: #fee2e2;
+  --berry-ink: #b91c1c;
+  --on-berry: #ffffff;
+  --pink: #e0559f;
+  --medal-silver: #cfcadf;
+  --medal-bronze: #f2a65a;
+  --panda-ink: #333333;
+  --panda-pad: #555555;
+  --panda-fur: #ffffff;
+  --blush: #ffb7b2;
+  --panda-rim: #ffffff00;
+  --shadow-sm: 0 1px 2px #1e1b2e0f, 0 4px 12px #1e1b2e0d;
+  --shadow-lg: 0 8px 24px #1e1b2e1f;
+  --press: 0 4px 0 #dad5e8;
+  --press-brand: 0 4px 0 #5a26bd;
+  --focus-ring: 0 0 0 3px #f5f3fa, 0 0 0 6px #7b3fe4;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  --font-display: Fredoka, "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --font-text: Lexend, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #13111c;
+    --surface: #1e1b2b;
+    --surface-sunken: #282438;
+    --line: #353047;
+    --line-strong: #77708f;
+    --ink: #f4f2fb;
+    --ink-muted: #aca6c2;
+    --brand: #a98bff;
+    --brand-soft: #2e2452;
+    --brand-press: #6f52d6;
+    --on-brand: #13111c;
+    --on-color: #13111c;
+    --sky: #38bdf8;
+    --sky-soft: #0c2f45;
+    --sky-ink: #7dd3fc;
+    --grass: #4ade80;
+    --grass-soft: #0f3320;
+    --grass-ink: #86efac;
+    --sun-soft: #3a2f07;
+    --sun-ink: #fde68a;
+    --berry: #ff6b6b;
+    --berry-soft: #3f1416;
+    --berry-ink: #fca5a5;
+    --on-berry: #13111c;
+    --pink: #f472b6;
+    --panda-rim: #c9c3de;
+    --shadow-sm: 0 1px 2px #00000066, 0 4px 12px #00000040;
+    --shadow-lg: 0 12px 32px #000000a6;
+    --press: 0 4px 0 #0b0a11;
+    --press-brand: 0 4px 0 #6f52d6;
+    --focus-ring: 0 0 0 3px #13111c, 0 0 0 6px #a98bff;
+  }
+}

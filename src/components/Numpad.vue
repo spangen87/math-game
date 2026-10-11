@@ -30,28 +30,23 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="grid grid-cols-3 gap-1.5 md:gap-3 w-full max-w-xs mx-auto">
-    <button 
-      v-for="key in keys" 
+  <div class="ms-numpad">
+    <button
+      v-for="key in keys"
       :key="key"
+      type="button"
+      class="ms-key"
+      :class="{ 'ms-key--zero': key === 0 }"
       @click="emit('input', key)"
-      class="bg-white text-sky-600 text-xl md:text-3xl font-bold py-2 md:py-4 rounded-2xl shadow-md border-b-4 border-sky-100 active:border-b-0 active:translate-y-1 transition-all"
-      :class="{ 'col-start-2': key === 0 }"
     >
       {{ key }}
     </button>
-    
-    <button 
-      @click="emit('delete')"
-      class="bg-purple-100 text-black-200 flex items-center justify-center rounded-2xl shadow-md border-b-4 border-berry-200 active:border-b-0 active:translate-y-1 transition-all py-2 md:py-0"
-    >
-      <Delete class="w-6 h-6 md:w-8 md:h-8" />
+
+    <button type="button" class="ms-key ms-key--delete" aria-label="Radera" @click="emit('delete')">
+      <Delete class="ms-icon" />
     </button>
 
-    <button 
-      @click="emit('submit')"
-      class="col-span-3 bg-yellow-100 text-black-200 text-lg md:text-2xl font-bold py-2 md:py-4 rounded-2xl shadow-lg border-b-4 border-yellow-400 active:border-b-0 active:translate-y-1 transition-all mt-1 md:mt-2 hover:bg-yellow-200"
-    >
+    <button type="button" class="ms-btn ms-btn--primary ms-btn--block" @click="emit('submit')">
       Svara
     </button>
   </div>

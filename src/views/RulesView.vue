@@ -4,74 +4,63 @@ import { ArrowLeft, Swords, GraduationCap, Clock, Trophy, SkipForward, Lightbulb
 const emit = defineEmits<{
   (e: 'home'): void;
 }>();
+
+const modes = [
+  {
+    title: 'Tävling',
+    icon: Swords,
+    tone: 'ms-tone-brand',
+    text: 'Utmana dig själv! Du har 60 sekunder på dig att svara på så många frågor som möjligt.',
+    points: [
+      { icon: Clock, text: 'Tiden tickar ner från 60 sekunder' },
+      { icon: Trophy, text: 'Få poäng för rätt svar. Svara rätt flera gånger i rad för bonus' },
+      { icon: SkipForward, text: 'Du kan hoppa över 2 svåra frågor' },
+    ],
+  },
+  {
+    title: 'Öva',
+    icon: GraduationCap,
+    tone: 'ms-tone-sky',
+    text: 'Ingen stress! Ta god tid på dig att lösa uppgifterna i din egen takt.',
+    points: [
+      { icon: Lightbulb, text: 'Få ledtrådar om du kör fast' },
+      { icon: Eye, text: 'Se svaret om du vill lära dig' },
+    ],
+  },
+];
 </script>
 
 <template>
-  <div class="card w-full max-w-md p-4 md:p-8 flex flex-col gap-6 animate-fade-in overflow-y-auto max-h-[90dvh]">
-    <div class="flex items-center gap-4">
-      <button @click="emit('home')" class="p-2 hover:bg-slate-100 rounded-xl transition-colors">
-        <ArrowLeft class="w-6 h-6 text-slate-600" />
+  <div class="ms-card w-full max-w-md max-h-full overflow-y-auto">
+    <div class="flex items-center gap-2">
+      <button type="button" class="ms-btn ms-btn--ghost" aria-label="Tillbaka" @click="emit('home')">
+        <ArrowLeft class="ms-icon" />
       </button>
-      <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Så här spelar du</h2>
+      <h2 class="ms-card__title">Så här spelar du</h2>
     </div>
 
-    <div class="flex flex-col gap-6">
-      <!-- Ranked Mode -->
-      <div class="bg-purple-50 p-4 rounded-2xl border-2 border-purple-100">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="p-2 bg-purple-100 rounded-xl text-purple-600">
-            <Swords class="w-6 h-6" />
-          </div>
-          <h3 class="text-xl font-bold text-purple-900">Tävling</h3>
-        </div>
-        <p class="text-slate-600 mb-4 leading-relaxed">
-          Utmana dig själv! Du har 60 sekunder på dig att svara på så många frågor som möjligt.
-        </p>
-        <ul class="space-y-2">
-          <li class="flex items-center gap-2 text-sm text-slate-700">
-            <Clock class="w-4 h-4 text-purple-500" />
-            <span>Tiden tickar ner från 60 sekunder</span>
-          </li>
-          <li class="flex items-center gap-2 text-sm text-slate-700">
-            <Trophy class="w-4 h-4 text-purple-500" />
-            <span>Få poäng för rätt svar. Svara rätt flera gånger i rad för bonus!</span>
-          </li>
-          <li class="flex items-center gap-2 text-sm text-slate-700">
-            <SkipForward class="w-4 h-4 text-purple-500" />
-            <span>Du kan hoppa över 2 svåra frågor</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Practice Mode -->
-      <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-100">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="p-2 bg-sky-100 rounded-xl text-sky-600">
-            <GraduationCap class="w-6 h-6" />
-          </div>
-          <h3 class="text-xl font-bold text-sky-900">Öva</h3>
-        </div>
-        <p class="text-slate-600 mb-4 leading-relaxed">
-          Ingen stress! Ta god tid på dig att lösa uppgifterna i din egen takt.
-        </p>
-        <ul class="space-y-2">
-          <li class="flex items-center gap-2 text-sm text-slate-700">
-            <Lightbulb class="w-4 h-4 text-sky-500" />
-            <span>Få ledtrådar om du kör fast</span>
-          </li>
-          <li class="flex items-center gap-2 text-sm text-slate-700">
-            <Eye class="w-4 h-4 text-sky-500" />
-            <span>Se svaret om du vill lära dig</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <button 
-      @click="emit('home')"
-      class="btn-primary w-full flex items-center justify-center gap-2 text-lg py-3 mt-2"
+    <section
+      v-for="mode in modes"
+      :key="mode.title"
+      class="flex flex-col gap-3 bg-surface-sunken rounded-[var(--radius-md)] p-4"
     >
-      <ArrowLeft class="w-5 h-5" />
+      <div class="flex items-center gap-3">
+        <span class="ms-stat p-0! w-10 h-10 justify-center shrink-0" :class="mode.tone">
+          <component :is="mode.icon" class="ms-icon" />
+        </span>
+        <h3 class="font-display text-xl font-semibold text-ink m-0">{{ mode.title }}</h3>
+      </div>
+      <p class="m-0 text-ink leading-6">{{ mode.text }}</p>
+      <ul class="m-0 p-0 list-none flex flex-col gap-2">
+        <li v-for="point in mode.points" :key="point.text" class="flex items-start gap-2 text-sm leading-5 text-ink-muted">
+          <component :is="point.icon" class="ms-icon w-[18px]! h-[18px]! mt-px text-ink" />
+          <span>{{ point.text }}</span>
+        </li>
+      </ul>
+    </section>
+
+    <button type="button" class="ms-btn ms-btn--primary ms-btn--block" @click="emit('home')">
+      <ArrowLeft class="ms-icon" />
       Tillbaka
     </button>
   </div>

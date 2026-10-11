@@ -12,13 +12,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-purple-50">
-    <h1 class="text-4xl md:text-6xl font-bold text-purple-600 mb-12 animate-bounce-in text-center px-4 drop-shadow-sm">
+  <div class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-12 bg-bg px-4">
+    <h1 class="font-display text-ink text-center text-[clamp(36px,10vw,56px)] leading-none font-semibold tracking-[-0.02em] text-balance animate-bounce-in">
       Biancas Mattespel
     </h1>
-    <div class="transform scale-150">
-      <Pandis state="idle" :waving="true" />
-    </div>
+    <Pandis :waving="true" :bubble="'Hej!'" :size="240" />
   </div>
 </template>
 
@@ -48,6 +46,12 @@ onMounted(() => {
   100% {
     opacity: 1;
     transform: scale3d(1, 1, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bounce-in {
+    animation: none;
   }
 }
 </style>

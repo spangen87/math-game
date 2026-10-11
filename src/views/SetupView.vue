@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Play, Calculator, Zap, Brain, Divide, GraduationCap, Swords, Trophy, HelpCircle } from 'lucide-vue-next';
-import type { GameConfig, Operator, Difficulty, GameMode } from '../types';
+import { Play, GraduationCap, Swords, Trophy, CircleHelp } from 'lucide-vue-next';
+import Pandis from '../components/Pandis.vue';
+import OptionTile from '../components/OptionTile.vue';
+import { displayOperator, operatorOptions, difficultyOptions } from '../labels';
+import type { GameConfig, Operator, GameMode } from '../types';
 
 const props = defineProps<{
   config: GameConfig;
@@ -9,23 +12,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'start'): void;
-  (e: 'start'): void;
   (e: 'view-leaderboard'): void;
   (e: 'view-rules'): void;
 }>();
-
-const operators: { value: Operator; label: string; icon: any }[] = [
-  { value: '+', label: 'Addition', icon: Calculator },
-  { value: '-', label: 'Subtraktion', icon: Zap },
-  { value: '×', label: 'Multiplikation', icon: Brain },
-  { value: '÷', label: 'Division', icon: Divide },
-];
-
-const difficulties: { value: Difficulty; label: string }[] = [
-  { value: 'Easy', label: 'Lätt' },
-  { value: 'Medium', label: 'Medel' },
-  { value: 'Hard', label: 'Svår' },
-];
 
 const modes: { value: GameMode; label: string; icon: any; description: string }[] = [
   { value: 'ranked', label: 'Tävling', icon: Swords, description: 'Tid och poäng' },
@@ -33,6 +22,7 @@ const modes: { value: GameMode; label: string; icon: any; description: string }[
 ];
 
 const localConfig = ref(props.config);
+const nameError = ref('');
 
 const toggleOperator = (op: Operator) => {
   const index = localConfig.value.operators.indexOf(op);
@@ -47,113 +37,102 @@ const toggleOperator = (op: Operator) => {
 
 const startGame = () => {
   if (!localConfig.value.playerName.trim()) {
-    alert('Vänligen skriv ditt namn!');
+    nameError.value = 'Skriv ditt namn för att starta.';
     return;
   }
+  nameError.value = '';
   emit('start');
 };
 </script>
 
 <template>
-  <div class="card w-full max-w-md p-4 md:p-8 flex flex-col gap-3 md:gap-4 animate-fade-in overflow-y-auto max-h-[90dvh]">
-    <div class="text-center">
-      <h2 class="text-3xl md:text-3xl font-black text-purple-400 mb-1 md:mb-2">Biancas Mattespel</h2>
-      <div class="flex items-center justify-center gap-2 mb-1 md:mb-2">
-        <p class="text-sm md:text-base text-slate-500">Välj dina inställningar!</p>
-        <button 
-          @click="emit('view-rules')"
-          class="p-1 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors"
-          title="Hur spelar man?"
-        >
-          <HelpCircle class="w-4 h-4" />
-        </button>
+  <div class="ms-card w-full max-w-md max-h-full overflow-y-auto">
+    <div class="flex items-center gap-3">
+      <Pandis :size="64" :bubble="null" />
+      <div class="flex-1 min-w-0">
+        <h1 class="font-display text-ink text-[clamp(28px,7vw,36px)] leading-[1.05] font-semibold tracking-[-0.02em] text-balance m-0">
+          Biancas Mattespel
+        </h1>
+        <p class="text-ink-muted text-sm mt-1 mb-0">Välj dina inställningar</p>
       </div>
+      <button
+        type="button"
+        class="ms-btn ms-btn--ghost self-start"
+        aria-label="Hur spelar man?"
+        @click="emit('view-rules')"
+      >
+        <CircleHelp class="ms-icon" />
+      </button>
     </div>
 
-    <!-- Name Input -->
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-slate-700 text-sm md:text-base">Spelarnamn</label>
-      <input 
+    <div class="ms-field" :class="{ 'ms-field--error': nameError }">
+      <label class="ms-field__label" for="player-name">Spelarnamn</label>
+      <input
+        id="player-name"
         v-model="localConfig.playerName"
-        type="text" 
+        type="text"
+        class="ms-field__input"
         placeholder="Skriv ditt namn"
-        class="w-full px-4 py-2 md:py-3 rounded-xl border-2 border-sky-100 focus:border-sky-400 focus:outline-none text-base md:text-lg transition-colors"
+        autocomplete="off"
+        :aria-invalid="nameError ? 'true' : undefined"
+        :aria-describedby="nameError ? 'player-name-error' : undefined"
+        @input="nameError = ''"
       />
+      <div v-if="nameError" id="player-name-error" class="ms-field__error">{{ nameError }}</div>
     </div>
 
-    <!-- Game Mode Selection -->
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-slate-700 text-sm md:text-base">Spelläge</label>
-      <div class="grid grid-cols-2 gap-2 md:gap-3">
-        <button 
-          v-for="mode in modes" 
+    <div class="ms-field" role="group" aria-label="Spelläge">
+      <span class="ms-field__label" aria-hidden="true">Spelläge</span>
+      <div class="ms-tiles" style="--ms-cols: 2">
+        <OptionTile
+          v-for="mode in modes"
           :key="mode.value"
+          :label="mode.label"
+          :description="mode.description"
+          :icon="mode.icon"
+          :selected="localConfig.mode === mode.value"
           @click="localConfig.mode = mode.value"
-          class="flex flex-col items-center gap-1 md:gap-2 p-3 md:p-4 rounded-xl border-2 transition-all duration-200"
-          :class="localConfig.mode === mode.value 
-            ? 'bg-purple-100 border-purple-500 text-purple-700 scale-105' 
-            : 'bg-white border-slate-100 text-slate-400 hover:border-purple-200'"
-        >
-          <component :is="mode.icon" class="w-5 h-5 md:w-6 md:h-6" />
-          <div class="flex flex-col items-center">
-            <span class="font-bold text-base md:text-lg">{{ mode.label }}</span>
-            <span class="text-[10px] md:text-xs opacity-75">{{ mode.description }}</span>
-          </div>
-        </button>
+        />
       </div>
     </div>
 
-    <!-- Operator Selection -->
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-slate-700 text-sm md:text-base">Räknesätt (Välj minst en)</label>
-      <div class="grid grid-cols-4 gap-2">
-        <button 
-          v-for="op in operators" 
+    <div class="ms-field" role="group" aria-label="Räknesätt">
+      <span class="ms-field__label" aria-hidden="true">Räknesätt (välj minst ett)</span>
+      <div class="ms-tiles" style="--ms-cols: 4">
+        <OptionTile
+          v-for="op in operatorOptions"
           :key="op.value"
+          :label="op.label"
+          :symbol="displayOperator(op.value)"
+          :selected="localConfig.operators.includes(op.value)"
           @click="toggleOperator(op.value)"
-          class="flex flex-col items-center gap-1 md:gap-2 p-2 md:p-3 rounded-xl border-2 transition-all duration-200"
-          :class="localConfig.operators.includes(op.value)
-            ? 'bg-sky-100 border-sky-500 text-sky-700 scale-105' 
-            : 'bg-white border-slate-100 text-slate-400 hover:border-sky-200'"
-        >
-          <component :is="op.icon" class="w-4 h-4 md:w-5 md:h-5" />
-          <span class="font-bold text-base md:text-lg">{{ op.value }}</span>
-        </button>
+        />
       </div>
     </div>
 
-    <!-- Difficulty Selection -->
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-slate-700 text-sm md:text-base">Svårighetsgrad</label>
-      <div class="grid grid-cols-3 gap-2 md:gap-3">
-        <button 
-          v-for="diff in difficulties" 
+    <div class="ms-field" role="group" aria-label="Svårighetsgrad">
+      <span class="ms-field__label" aria-hidden="true">Svårighetsgrad</span>
+      <div class="ms-tiles" style="--ms-cols: 3">
+        <OptionTile
+          v-for="diff in difficultyOptions"
           :key="diff.value"
+          :label="diff.label"
+          :selected="localConfig.difficulty === diff.value"
           @click="localConfig.difficulty = diff.value"
-          class="py-2 md:py-3 rounded-xl border-2 font-bold text-sm md:text-base transition-all duration-200"
-          :class="localConfig.difficulty === diff.value
-            ? 'bg-grass-100 border-grass-500 text-grass-700 scale-105'
-            : 'bg-white border-slate-100 text-slate-400 hover:border-grass-200'"
-        >
-          {{ diff.label }}
-        </button>
+        />
       </div>
     </div>
 
-    <button 
-      @click="startGame"
-      class="btn-primary w-full flex items-center justify-center gap-2 text-lg md:text-xl mt-2 py-3 md:py-4"
-    >
-      <Play class="w-5 h-5 md:w-6 md:h-6 fill-current" />
-      Starta Spelet
-    </button>
-    
-    <button 
-      @click="emit('view-leaderboard')"
-      class="btn-secondary w-full flex items-center justify-center gap-2 text-base md:text-lg py-2 md:py-3"
-    >
-      <Trophy class="w-5 h-5 md:w-6 md:h-6" />
-      Se Topplistan
-    </button>
+    <div class="flex flex-col gap-3 pt-1">
+      <button type="button" class="ms-btn ms-btn--primary ms-btn--block" @click="startGame">
+        <Play class="ms-icon fill-current" />
+        Starta spelet
+      </button>
+
+      <button type="button" class="ms-btn ms-btn--secondary ms-btn--block" @click="emit('view-leaderboard')">
+        <Trophy class="ms-icon" />
+        Se topplistan
+      </button>
+    </div>
   </div>
 </template>
